@@ -6,6 +6,7 @@ module.exports = {
   devtool: 'inline-source-map',
   devServer: {
     contentBase: './dist',
+    open: true
   },
   module: {
     rules: [
@@ -20,6 +21,10 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.(ogg|mp3|wav|mpe?g)$/i,
+        use: 'file-loader'
       }
     ],
   },
