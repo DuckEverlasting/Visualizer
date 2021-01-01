@@ -5,22 +5,19 @@ export class Program {
     this.analyser = analyzer;
     this.streams = [];
     this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
-    for (let i = 0; i < 4; i++) {
+    let n = this.analyser.frequencyBinCount;
+    while (n > 1) {
       this.streams.push(new Stream());
+      n /= 2;
     }
   }
 
   updateData() {
     this.analyser.getByteFrequencyData(this.frequencyData);
-    console.log(this.frequencyData);
-    for (let i = 0; i < 4; i++) {
-      const peak = Math.max(
-        this.frequencyData[i * 4],
-        this.frequencyData[i * 4 + 1],
-        this.frequencyData[i * 4 + 2],
-        this.frequencyData[i * 4 + 3]
-      );
-      this.streams[i].updateData(peak);
+    for (let i = 0; i < this.streams.length; i++) {
+      const arr = this.frequencyData.slice(Math.pow(2, i) - 1, Math.pow(2, i + 1) - 1);
+      const avg = arr.reduce((a,b) => a + b, 0) / arr.length;
+      this.streams[i].updateData(avg);
     }
   }
 

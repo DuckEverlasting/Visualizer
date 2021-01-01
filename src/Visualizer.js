@@ -1,26 +1,53 @@
 import { Display } from "./Display";
 import { BarsProgram } from "./programs/BarsProgram";
-import { Program } from "./programs/Program";
+import { MirroredBarsProgram } from "./programs/MirroredBarsProgram";
+import { NoteBarsProgram } from "./programs/NoteBarsProgram";
+import { NoteBlobProgram } from "./programs/NoteBlobProgram";
+import { RippleProgram } from "./programs/RippleProgram";
 
 export class Visualizer {
   constructor(containingElement, params = {}) {
     this.display = new Display(containingElement);
-    this.audioContext = new AudioContext();
+    this.audioContext = new AudioContext({
+      latencyHint: "playback",
+      sampleRate: 48000
+    });
     this.analyser = this.audioContext.createAnalyser();
-    this.analyser.fftSize = 32;
-    this.behavior = params.behavior || this.getDefaultBehavior();
+    this.analyser.fftSize = 8192;
+    this.analyser.smoothingTimeConstant = 0;
+    this.program = params.program ? this.getProgram(params.program) : this.getDefaultProgram();
     this.updateFrequency = params.updateFrequency || 1000 / 60;
     this.frame = 0;
     this.isRendering = false;
     this.lastRenderAt = null;
+
+    
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(stream => {
+      this.source = this.audioContext.createMediaStreamSource(stream);
+      this.source.connect(this.analyser);
+      this.source.connect(this.audioContext.destination);
+    });
   }
 
-  getDefaultBehavior() {
+  getProgram(slug) {
+    switch(slug) {
+      case 'bars':
+        return new BarsProgram(this.analyser);
+      case 'mirroredbars':
+        return new MirroredBarsProgram(this.analyser);
+      case 'notebars':
+        return new NoteBarsProgram(this.analyser);
+      case 'noteblob':
+        return new NoteBlobProgram(this.analyser);
+      case 'ripple':
+        return new RippleProgram(this.analyser);
+      default:
+        throw new Error('No such program: ' + slug);
+    }
+  }
+
+  getDefaultProgram() {
     return new BarsProgram(this.analyser);
-  }
-
-  setBehavior(behavior) {
-    this.behavior = behavior;
   }
 
   setAudioSource(source) {
@@ -37,20 +64,20 @@ export class Visualizer {
       return;
     }
     const renderLoop = () => {
-      if (!this.behavior || !this.analyser || !this.display) {
+      if (!this.program || !this.analyser || !this.display) {
         return this.stopRender();
       }
       const now = Date.now();
       const delta = now - this.lastRenderAt;
       if (delta > this.updateFrequency) {
-        this.behavior.updateData();
+        this.program.updateData();
       }
-      this.behavior.updatePhysics(delta);
-      this.behavior.render(this.display);
+      this.program.updatePhysics(delta);
+      this.program.render(this.display);
       this.lastRenderAt = now;
       this.frame = requestAnimationFrame(renderLoop);
     }
-    this.behavior.updateData();
+    this.program.updateData();
     this.lastRenderAt = Date.now();
     this.frame = requestAnimationFrame(renderLoop);
     this.isRendering = true;
