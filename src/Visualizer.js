@@ -1,4 +1,5 @@
 import { Display } from "./Display";
+import { MenuBar } from "./menu";
 import { BarsProgram } from "./programs/BarsProgram";
 import { MirroredBarsProgram } from "./programs/MirroredBarsProgram";
 import { NoteBarsProgram } from "./programs/NoteBarsProgram";
@@ -20,6 +21,39 @@ export class Visualizer {
     this.frame = 0;
     this.isRendering = false;
     this.lastRenderAt = null;
+    console.log(params.menuElement)
+    if (params.menuElement) {
+      this.menuBar = new MenuBar(params.menuElement, {
+        title: "ALEXANDER SAMUEL KLEIN!",
+        content: [
+          {
+            name: "Source",
+            children: [
+              {
+                name: "test",
+                type: "action",
+                action: () => console.log("TEST")
+              },
+              {
+                name: "other test",
+                type: "action",
+                action: () => console.log("OTHER TEST")
+              }
+            ]
+          },
+          {
+            name: "Visualizer",
+            children: [
+              {
+                name: "Bars",
+                type: "action",
+                action: () => console.log("BARS")
+              }
+            ]
+          }
+        ]
+      })
+    }
 
     
     navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(stream => {

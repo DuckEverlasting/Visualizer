@@ -3,6 +3,7 @@ import FinalCountdown from "./media/FinalCountdown.mp3";
 import { Visualizer } from "./Visualizer";
 
 const container = document.getElementById('main-container');
+const menuElement = document.getElementById('menu-container');
 const song = new Audio(Tetris);
 
 let started = false;
@@ -13,7 +14,8 @@ function start() {
   }
   // song.play();
   const visualizer = new Visualizer(container, {
-    program: 'noteblob'
+    program: 'noteblob',
+    menuElement
   });
   // visualizer.setAudioSource(song);
   visualizer.startRender();

@@ -8,7 +8,7 @@ export class NoteBlobProgram extends Program {
     // BAD! fix this
     this.streams = [];
     for (let i = 0; i <= 84; i++) {
-      this.streams.push(new Stream({ threshold: 50 }));
+      this.streams.push(new Stream({ threshold: 75 }));
       this.streams[i].note = i + 24;
     }
     this.streams.forEach(s => {
@@ -46,10 +46,10 @@ export class NoteBlobProgram extends Program {
       // ctx.fillStyle = this.colors[i % this.colors.length];
       ctx.fillStyle = `hsl(${fillIncrement * i}, 100%, 50%)`;
       const left = i === 0 ? 
-        this.streams[i].value / 100 :
+        0 :
         (this.streams[i].value + this.streams[i - 1].value) / 200;
       const right = i === this.streams.length - 1 ? 
-        this.streams[i].value / 100 :
+        0 :
         (this.streams[i].value + this.streams[i + 1].value) / 200;
       ctx.beginPath();
       ctx.moveTo(

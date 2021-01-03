@@ -1,24 +1,14 @@
-import { MenuItem, MenuItemType } from "./MenuItem";
-import { Menu } from "./Menu";
-import { vect } from "../util/Vector";
+import { vect } from "../helpers/Vector";
+import { MenuItem } from "./MenuItem";
 
-export class MenuBranch extends MenuItem implements MenuItemType {
-  public active = false;
-
-  constructor(
-    name: string,
-    public child: Menu,
-    public childPosition:
-      | ["right", "top"]
-      | ["right", "bottom"]
-      | ["left", "top"]
-      | ["left", "bottom"] = ["right", "top"]
-  ) {
+export class MenuBranch extends MenuItem {
+  constructor(name, child, childPosition = ["right", "top"]) {
     super(name);
+    this.active = false;
+    this.child = child;
+    this.childPosition = childPosition;
     this.addTextNode(">");
     this.element.className = "menu-branch";
-    this.child.element = this.element;
-    this.child.initialize();
     this.element.onclick = (e) => {
       this.open();
       e.stopPropagation();

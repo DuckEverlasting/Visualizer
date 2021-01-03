@@ -1,18 +1,6 @@
-import { MenuItem } from "./MenuItem";
-import { Vector } from "../util/Vector";
-
 export class Menu {
-  constructor(
-    public readonly name: string,
-    private children: MenuItem[],
-    public element?: HTMLElement
-  ) {
-    if (element) {
-      this.initialize();
-    }
-  }
-
-  initialize() {
+  constructor(children) {
+    this.children = children;
     this.element = document.createElement("div");
     this.element.className = "menu";
     this.children.forEach(child => {
@@ -21,7 +9,11 @@ export class Menu {
     });
   }
 
-  setPosition(v: Vector) {
+  initialize() {
+    
+  }
+
+  setPosition(v) {
     const maxX = Math.min(0, window.innerWidth - this.element.clientWidth);
     const maxY = Math.min(0, window.innerHeight - this.element.clientHeight);
     this.element.style.left = Math.max(v.x, maxX) + "px";
